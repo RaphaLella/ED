@@ -67,7 +67,7 @@ void lerArquivosTexto(list<string> lista)
             textos.push_front(text);
             abrirArquivo.close();
         }
-
+    a
     }
 }
 
