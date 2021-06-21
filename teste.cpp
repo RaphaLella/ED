@@ -31,12 +31,11 @@ list<string> nomeDosArquivos()
 
         int quant = stoi(quantidade); //converte de string para int
 
-        cout << "Quantidade de arquivos : " << quant << endl;
+        cout << "Quantidade de arquivos : " << quant << endl << endl;
 
         while (contador <= quant)
         {
             getline(arquivoEntrada, linha);
-            cout << linha <<endl;
             arquivos.push_back(linha);
             contador++;
         }
@@ -47,13 +46,29 @@ list<string> nomeDosArquivos()
         cout << "Não foi possível ler o arquivo";
     }
     return arquivos;
-
 }
 
-void lerArquivosTexto(list<string> lista) {
-    ifstream arquivoAberto;
-    cout << endl << lista.size();
+void lerArquivosTexto(list<string> lista)
+{
+    ifstream abrirArquivo;
+    string text;
 
+    list<string> textos;
+    list<string>::iterator k;
+
+    for (k = lista.begin(); k != lista.end(); k++)
+    {
+        abrirArquivo.open(*k);
+
+        if (abrirArquivo.is_open())
+        {
+            getline(abrirArquivo, text);
+            cout << text << endl;
+            textos.push_front(text);
+            abrirArquivo.close();
+        }
+
+    }
 }
 
 int main()
