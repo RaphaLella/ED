@@ -29,8 +29,11 @@ BTreeNode* BTree::doSearch(BTreeNode* node, string value, int& i) {
     i = 0;
     while (i < node->n && value > node->key[i]->palavra) i++;
 
-    if (i < node->n && value == node->key[i]->palavra)
+    if (i < node->n && value == node->key[i]->palavra) {
+        cout << "encontrou o no" << value << endl;
         return node;
+    }
+
     else {
         if (node->leaf == true) return 0;
 
@@ -387,8 +390,8 @@ void BTree::printRepeticoes(BTreeNode* node, int spaces) {
         //     cout << "(" << node->leaf << ") (" << node->n << ") (nulo)";
         // cout << endl;
 
-        // for (int i = 0; i < node->n + 1; i++)
-        //     printRepeticoes(node->c[i], spaces + 5);
+        for (int i = 0; i < node->n + 1; i++)
+            printRepeticoes(node->c[i], spaces + 5);
     }
 }
 
@@ -436,7 +439,8 @@ void BTree::update(string palavra, int docId) {
         auto it = mapRepeticoes.find(docId);
         if (it != mapRepeticoes.end()) {
             // a chave já existe no mapa, apenas incrementar no contador
-            it->second++;
+            cout << it->second << endl;
+            mapRepeticoes[docId] = it->second + 1;
         } else {
             mapRepeticoes.insert(pair<int, int>(docId, 1));
         }
