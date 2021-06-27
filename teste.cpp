@@ -47,16 +47,21 @@ void lerArquivosTexto(list<string> lista) {
     list<string>::iterator k;
 
     for (k = lista.begin(); k != lista.end(); k++) {
-        abrirArquivo.open(*k);
+        // ver se o arq existe
 
-        if (abrirArquivo.is_open()) {
-            while (getline(abrirArquivo, text)) {
-                // separarPalavras(tree, text);
-                cout << text << endl;
+        try {
+            abrirArquivo.open(*k);
+            if (abrirArquivo.is_open()) {
+                while (getline(abrirArquivo, text)) {
+                    // separarPalavras(tree, text);
+                    cout << text << endl;
+                }
+                cout << indice << endl;
+                indice++;
+                abrirArquivo.close();
             }
-            cout << indice << endl;
-            indice++;
-            abrirArquivo.close();
+        } catch (exception error) {
+            cout << "erro" << endl;
         }
     }
 }
