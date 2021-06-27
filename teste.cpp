@@ -1,9 +1,12 @@
+#include <bits/stdc++.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
-#include <map>
 
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <map>
 
 #include "BTree.h"
 
@@ -35,11 +38,32 @@ list<string> pegarNomeDosArquivos() {
     }
 
     return arquivos;
+}
 
+void separarPalavras(BTree *tree, string texto, int indice) {
+    // remove pontuação da string
+    for (int i = 0, len = texto.size(); i < len; i++) {
+        if (ispunct(texto[i])) {
+            texto.erase(i--, 1);
+            len = texto.size();
+        }
+    }
+    // deixa todas as letras minusculas
+    std::transform(texto.begin(), texto.end(), texto.begin(), ::tolower);
+
+    // cout << texto << endl;
+    stringstream ss(texto);
+    string word;
+    // itera palavra a palavra
+    while (ss >> word) {
+        // cout << word << endl;
+        tree->update(word, indice);
+    }
+    cout << endl;
 }
 
 void lerArquivosTexto(list<string> lista) {
-    //BTree* tree = new BTree(2);
+    BTree *tree = new BTree(2);
     ifstream abrirArquivo;
     string textoArquivo, aux;
     map<string, int> mapArquivo;
@@ -54,22 +78,17 @@ void lerArquivosTexto(list<string> lista) {
 
         if (!abrirArquivo.fail() && abrirArquivo.is_open()) {
             while (getline(abrirArquivo, aux)) {
-                // separarPalavras(tree, text);
+                separarPalavras(tree, aux, indice);
                 textoArquivo += aux;
             }
-            mapArquivo.insert(pair<string, int>(textoArquivo, indice));
-            textoArquivo = "";
             indice++;
             abrirArquivo.close();
         }
     }
-
-    for (const auto& x : mapArquivo) {
-        std::cout <<"Texto: " << "\n" << x.first << "\n" << "Indice: " << "\n" << x.second << "\n" << "\n";
-    }
+    tree->printRepeticoes();
 }
 
-int main() { 
+int main() {
     list<string> nomeDosArquivos = pegarNomeDosArquivos();
 
     lerArquivosTexto(nomeDosArquivos);

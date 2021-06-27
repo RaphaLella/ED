@@ -1,14 +1,13 @@
-//Definição da classe que representa um nó da B-árvore
+// Definição da classe que representa um nó da B-árvore
+#include "Palavra.cpp"
+class BTreeNode {
+   public:
+    int n;
+    bool leaf;
+    Palavra** key;
+    BTreeNode** c;
+    BTreeNode* parent;
 
-class BTreeNode
-{
-    public:
-        int n;
-        bool leaf;
-        int* key;        
-        BTreeNode** c;
-        BTreeNode* parent;
-
-        BTreeNode(int);
-        ~BTreeNode();
+    BTreeNode(int);
+    ~BTreeNode();
 };
