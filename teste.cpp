@@ -1,4 +1,5 @@
 #include <time.h>
+#include <map>
 
 #include <fstream>
 #include <iostream>
@@ -8,9 +9,9 @@
 
 using namespace std;
 
-list<string> nomeDosArquivos() {
+list<string> pegarNomeDosArquivos() {
     ifstream arquivoEntrada;
-    string linha;
+    string nomeDoArquivo;
     list<string> arquivos;
 
     arquivoEntrada.open("dados.txt");
@@ -23,24 +24,25 @@ list<string> nomeDosArquivos() {
 
         int quant = stoi(quantidade);  // converte de string para int
 
-        cout << "Quantidade de arquivos : " << quant << endl << endl;
-
         while (contador <= quant) {
-            getline(arquivoEntrada, linha);
-            arquivos.push_back(linha);
+            getline(arquivoEntrada, nomeDoArquivo);
+            arquivos.push_back(nomeDoArquivo);
             contador++;
         }
         arquivoEntrada.close();
     } else {
         cout << "Não foi possível ler o arquivo";
     }
+
     return arquivos;
+
 }
 
 void lerArquivosTexto(list<string> lista) {
-    BTree* tree = new BTree(2);
+    //BTree* tree = new BTree(2);
     ifstream abrirArquivo;
-    string text;
+    string textoArquivo, aux;
+    map<string, int> mapArquivo;
 
     int indice = 1;
 
@@ -51,15 +53,24 @@ void lerArquivosTexto(list<string> lista) {
         abrirArquivo.open(*k);
 
         if (!abrirArquivo.fail() && abrirArquivo.is_open()) {
-            while (getline(abrirArquivo, text)) {
+            while (getline(abrirArquivo, aux)) {
                 // separarPalavras(tree, text);
-                cout << text << endl;
+                textoArquivo += aux;
             }
-            cout << indice << endl;
+            mapArquivo.insert(pair<string, int>(textoArquivo, indice));
+            textoArquivo = "";
             indice++;
             abrirArquivo.close();
         }
     }
+
+    for (const auto& x : mapArquivo) {
+        std::cout <<"Texto: " << "\n" << x.first << "\n" << "Indice: " << "\n" << x.second << "\n" << "\n";
+    }
 }
 
-int main() { lerArquivosTexto(nomeDosArquivos()); }
+int main() { 
+    list<string> nomeDosArquivos = pegarNomeDosArquivos();
+
+    lerArquivosTexto(nomeDosArquivos);
+}
