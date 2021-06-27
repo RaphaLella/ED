@@ -1,77 +1,64 @@
-#include <iostream>
+#include <time.h>
+
 #include <fstream>
+#include <iostream>
 #include <list>
+
+#include "BTree.h"
 
 using namespace std;
 
-list<string> nomeDosArquivos()
-{
-
-    /* ofstream arquivoSaida;
-
-    arquivoSaida.open("dados.txt", ios::app); //ios::app para colocar o cursor no final
-
-    //arquivo << "Texto inserido pelo COUT \n"; adicionar texto ao arquivo
-
-    arquivoSaida.close();
-
-    */
-
+list<string> nomeDosArquivos() {
     ifstream arquivoEntrada;
     string linha;
     list<string> arquivos;
 
     arquivoEntrada.open("dados.txt");
-    if (arquivoEntrada.is_open())
-    {
-
+    if (arquivoEntrada.is_open()) {
         string quantidade;
         int contador = 1;
-        getline(arquivoEntrada, quantidade); //Pega a primeira linha que é a quantidade de arquivos e coloca na variável quantidade
+        getline(arquivoEntrada,
+                quantidade);  // Pega a primeira linha que é a quantidade de
+                              // arquivos e coloca na variável quantidade
 
-        int quant = stoi(quantidade); //converte de string para int
+        int quant = stoi(quantidade);  // converte de string para int
 
         cout << "Quantidade de arquivos : " << quant << endl << endl;
 
-        while (contador <= quant)
-        {
+        while (contador <= quant) {
             getline(arquivoEntrada, linha);
             arquivos.push_back(linha);
             contador++;
         }
         arquivoEntrada.close();
-    }
-    else
-    {
+    } else {
         cout << "Não foi possível ler o arquivo";
     }
     return arquivos;
 }
 
-void lerArquivosTexto(list<string> lista)
-{
+void lerArquivosTexto(list<string> lista) {
+    BTree* tree = new BTree(2);
     ifstream abrirArquivo;
     string text;
 
-    list<string> textos;
+    int indice = 1;
+
     list<string>::iterator k;
 
-    for (k = lista.begin(); k != lista.end(); k++)
-    {
+    for (k = lista.begin(); k != lista.end(); k++) {
         abrirArquivo.open(*k);
 
-        if (abrirArquivo.is_open())
-        {
-            getline(abrirArquivo, text);
-            cout << text << endl;
-            textos.push_front(text);
+        if (abrirArquivo.is_open()) {
+            while (getline(abrirArquivo, text)) {
+                // separarPalavras(tree, text);
+                cout << text << endl;
+            }
+            cout << indice << endl;
+            indice++;
             abrirArquivo.close();
         }
-    a
     }
 }
 
-int main()
-{
-    lerArquivosTexto(nomeDosArquivos());
-}
+int main() { lerArquivosTexto(nomeDosArquivos()); }
