@@ -27,10 +27,13 @@ bool BTree::search(string value) {
 // referência i
 BTreeNode* BTree::doSearch(BTreeNode* node, string value, int& i) {
     i = 0;
-    while (i < node->n && value > node->key[i]->palavra) i++;
+
+    while (i < node->n && value > node->key[i]->palavra) {
+        i++;
+    }
 
     if (i < node->n && value == node->key[i]->palavra) {
-        cout << "encontrou o no" << value << endl;
+        // cout << "encontrou o no " << value << endl;
         return node;
     }
 
@@ -80,6 +83,7 @@ void BTree::doInsert(Palavra* value) {
         splitChild(s, 0);
 
         insertNonFull(s, value);
+
     } else {
         insertNonFull(root, value);
     }
@@ -122,7 +126,7 @@ void BTree::insertNonFull(BTreeNode* x, Palavra* value) {
     if (x->leaf) {
         // printf("\nFolha -> n = %d", x->n);
         // fflush(NULL);
-        while (i >= 0 && value < x->key[i]) {
+        while (i >= 0 && value->palavra < x->key[i]->palavra) {
             x->key[i + 1] = x->key[i];
             i--;
         }
@@ -131,7 +135,7 @@ void BTree::insertNonFull(BTreeNode* x, Palavra* value) {
 
         DISK_WRITE(x);
     } else {
-        while (i >= 0 && value < x->key[i]) i--;
+        while (i >= 0 && value->palavra < x->key[i]->palavra) i--;
 
         i++;
         DISK_READ(x->c[i]);
@@ -139,7 +143,7 @@ void BTree::insertNonFull(BTreeNode* x, Palavra* value) {
         if (x->c[i]->n == 2 * t - 1) {
             splitChild(x, i);
 
-            if (value > x->key[i]) i++;
+            if (value->palavra > x->key[i]->palavra) i++;
         }
         insertNonFull(x->c[i], value);
     }
@@ -439,7 +443,7 @@ void BTree::update(string palavra, int docId) {
         auto it = mapRepeticoes.find(docId);
         if (it != mapRepeticoes.end()) {
             // a chave já existe no mapa, apenas incrementar no contador
-            cout << it->second << endl;
+            // cout << it->second << endl;
             mapRepeticoes[docId] = it->second + 1;
         } else {
             mapRepeticoes.insert(pair<int, int>(docId, 1));
