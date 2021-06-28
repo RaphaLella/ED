@@ -12,12 +12,12 @@
 
 using namespace std;
 
-list<string> pegarNomeDosArquivos() {
+list<string> pegarNomeDosArquivos(string nomeArquivo) {
     ifstream arquivoEntrada;
     string nomeDoArquivo;
     list<string> arquivos;
 
-    arquivoEntrada.open("dados.txt");
+    arquivoEntrada.open(nomeArquivo);
     if (arquivoEntrada.is_open()) {
         string quantidade;
         int contador = 1;
@@ -88,8 +88,11 @@ void lerArquivosTexto(list<string> lista) {
     tree->printRepeticoes();
 }
 
-int main() {
-    list<string> nomeDosArquivos = pegarNomeDosArquivos();
+int main(int argc, char **argv) {
+    cout << argc << endl;
+    string nomeArquivo = argv[1];
+
+    list<string> nomeDosArquivos = pegarNomeDosArquivos(nomeArquivo);
 
     lerArquivosTexto(nomeDosArquivos);
 }
