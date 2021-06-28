@@ -59,10 +59,9 @@ void separarPalavras(BTree *tree, string texto, int indice) {
         // cout << word << endl;
         tree->update(word, indice);
     }
-    cout << endl;
 }
 
-void lerArquivosTexto(list<string> lista) {
+void lerArquivosTexto(list<string> lista, string nomeArquivo) {
     BTree *tree = new BTree(2);
     ifstream abrirArquivo;
     string textoArquivo, aux;
@@ -85,14 +84,13 @@ void lerArquivosTexto(list<string> lista) {
             abrirArquivo.close();
         }
     }
-    tree->printRepeticoes();
+    tree->printRepeticoes(nomeArquivo);
 }
 
 int main(int argc, char **argv) {
-    cout << argc << endl;
-    string nomeArquivo = argv[1];
+    string nomeArquivoEntrada = argv[1];
 
-    list<string> nomeDosArquivos = pegarNomeDosArquivos(nomeArquivo);
+    list<string> listNomeDosArquivos = pegarNomeDosArquivos(nomeArquivoEntrada);
 
-    lerArquivosTexto(nomeDosArquivos);
+    lerArquivosTexto(listNomeDosArquivos, nomeArquivoEntrada);
 }

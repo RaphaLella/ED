@@ -21,7 +21,7 @@ class BTree {
     void merge(BTreeNode*, int);
     void DISK_READ(BTreeNode*);
     void DISK_WRITE(BTreeNode*);
-    void printRepeticoes(BTreeNode*, int);
+    void printRepeticoes(BTreeNode*, string);
 
    public:
     BTree(int);
@@ -34,7 +34,7 @@ class BTree {
     bool remove(string);
 
     void update(string, int);
-    void printRepeticoes();
+    void printRepeticoes(string);
     void print();
     void levelTraversal();
 };

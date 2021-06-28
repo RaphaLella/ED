@@ -1,8 +1,10 @@
 #include "BTree.h"
+#include <iostream>
 
 #include <map>
 // Constrói uma B-árvore contendo apenas a raiz vazia.
-BTree::BTree(int order) {
+BTree::BTree(int order)
+{
     t = order;
     numberOfKeys = 0;
     root = new BTreeNode(t);
@@ -14,9 +16,11 @@ BTree::BTree(int order) {
 BTree::~BTree() { delete root; }
 
 // Inicia a busca por uma chave (value) na B-árvore
-bool BTree::search(string value) {
+bool BTree::search(string value)
+{
     int i;
-    if (doSearch(root, value, i) != 0) return true;
+    if (doSearch(root, value, i) != 0)
+        return true;
 
     return false;
 }
@@ -25,20 +29,25 @@ bool BTree::search(string value) {
 // Retorna um ponteiro para o nó encontrado explicitamente e
 // a posição da chave no vetor de chaves no parâmetro por
 // referência i
-BTreeNode* BTree::doSearch(BTreeNode* node, string value, int& i) {
+BTreeNode *BTree::doSearch(BTreeNode *node, string value, int &i)
+{
     i = 0;
 
-    while (i < node->n && value > node->key[i]->palavra) {
+    while (i < node->n && value > node->key[i]->palavra)
+    {
         i++;
     }
 
-    if (i < node->n && value == node->key[i]->palavra) {
+    if (i < node->n && value == node->key[i]->palavra)
+    {
         // cout << "encontrou o no " << value << endl;
         return node;
     }
 
-    else {
-        if (node->leaf == true) return 0;
+    else
+    {
+        if (node->leaf == true)
+            return 0;
 
         DISK_READ(node->c[i]);
 
@@ -48,17 +57,19 @@ BTreeNode* BTree::doSearch(BTreeNode* node, string value, int& i) {
 
 // Não faz nada, apenas marca o local onde uma leitura do
 // disco deveria ser feita
-void BTree::DISK_READ(BTreeNode* node) { return; }
+void BTree::DISK_READ(BTreeNode *node) { return; }
 
 // Não faz nada, apenas marca o local onde uma escrita no
 // disco deveria ser feita
-void BTree::DISK_WRITE(BTreeNode* node) { return; }
+void BTree::DISK_WRITE(BTreeNode *node) { return; }
 
 // Inicia o processo de inserção de uma nova chave (value).
 // Busca para saber se não existe na árvore e somente nesse
 // momento chama doInsert para efetivamente inserir.
-bool BTree::insert(Palavra* key) {
-    if (search(key->palavra) == true) return false;
+bool BTree::insert(Palavra *key)
+{
+    if (search(key->palavra) == true)
+        return false;
 
     doInsert(key);
 
@@ -69,9 +80,11 @@ bool BTree::insert(Palavra* key) {
 // inicialmente, se ela não precisa ser quebrada antes
 // de invocar insertNonFull. Pode fazer a árvore aumentar
 // em altura
-void BTree::doInsert(Palavra* value) {
-    if (root->n == 2 * t - 1) {
-        BTreeNode* s = new BTreeNode(t);
+void BTree::doInsert(Palavra *value)
+{
+    if (root->n == 2 * t - 1)
+    {
+        BTreeNode *s = new BTreeNode(t);
 
         s->leaf = false;
         s->n = 0;
@@ -83,33 +96,40 @@ void BTree::doInsert(Palavra* value) {
         splitChild(s, 0);
 
         insertNonFull(s, value);
-
-    } else {
+    }
+    else
+    {
         insertNonFull(root, value);
     }
 }
 
 // Quebra um nó cheio em dois, sobe a mediana para o pai
-void BTree::splitChild(BTreeNode* x, int i) {
-    BTreeNode* z = new BTreeNode(t);
-    BTreeNode* y = x->c[i];
+void BTree::splitChild(BTreeNode *x, int i)
+{
+    BTreeNode *z = new BTreeNode(t);
+    BTreeNode *y = x->c[i];
 
     z->leaf = y->leaf;
     z->n = t - 1;
 
-    for (int j = 0; j < t - 1; j++) z->key[j] = y->key[j + t];
+    for (int j = 0; j < t - 1; j++)
+        z->key[j] = y->key[j + t];
 
-    if (!y->leaf) {
-        for (int j = 0; j < t; j++) z->c[j] = y->c[j + t];
+    if (!y->leaf)
+    {
+        for (int j = 0; j < t; j++)
+            z->c[j] = y->c[j + t];
     }
     y->n = t - 1;
 
-    for (int j = x->n; j > i; j--) x->c[j + 1] = x->c[j];
+    for (int j = x->n; j > i; j--)
+        x->c[j + 1] = x->c[j];
 
     x->c[i + 1] = z;
     z->parent = x;
 
-    for (int j = x->n - 1; j >= i; j--) x->key[j + 1] = x->key[j];
+    for (int j = x->n - 1; j >= i; j--)
+        x->key[j + 1] = x->key[j];
 
     x->key[i] = y->key[t - 1];
     x->n++;
@@ -120,13 +140,16 @@ void BTree::splitChild(BTreeNode* x, int i) {
 }
 
 // Recursivamente, insere uma nova chave em um nó não cheio
-void BTree::insertNonFull(BTreeNode* x, Palavra* value) {
+void BTree::insertNonFull(BTreeNode *x, Palavra *value)
+{
     int i = x->n - 1;
 
-    if (x->leaf) {
+    if (x->leaf)
+    {
         // printf("\nFolha -> n = %d", x->n);
         // fflush(NULL);
-        while (i >= 0 && value->palavra < x->key[i]->palavra) {
+        while (i >= 0 && value->palavra < x->key[i]->palavra)
+        {
             x->key[i + 1] = x->key[i];
             i--;
         }
@@ -134,16 +157,21 @@ void BTree::insertNonFull(BTreeNode* x, Palavra* value) {
         x->n++;
 
         DISK_WRITE(x);
-    } else {
-        while (i >= 0 && value->palavra < x->key[i]->palavra) i--;
+    }
+    else
+    {
+        while (i >= 0 && value->palavra < x->key[i]->palavra)
+            i--;
 
         i++;
         DISK_READ(x->c[i]);
 
-        if (x->c[i]->n == 2 * t - 1) {
+        if (x->c[i]->n == 2 * t - 1)
+        {
             splitChild(x, i);
 
-            if (value->palavra > x->key[i]->palavra) i++;
+            if (value->palavra > x->key[i]->palavra)
+                i++;
         }
         insertNonFull(x->c[i], value);
     }
@@ -152,8 +180,10 @@ void BTree::insertNonFull(BTreeNode* x, Palavra* value) {
 // Inicia o processo de remoção através de uma chamada
 // inicial à busca. Caso encontre, chama o método que vai
 // realizar a remoção
-bool BTree::remove(string x) {
-    if (!root) return false;
+bool BTree::remove(string x)
+{
+    if (!root)
+        return false;
 
     return doRemove(root, x);
 }
@@ -163,34 +193,43 @@ bool BTree::remove(string x) {
 // caso a raiz da subárvore tenha pelo menos t chaves. A
 // remoção também será realizada somente se a folha tiver
 // pelo menos t elementos.
-bool BTree::doRemove(BTreeNode* pt, string x) {
-    BTreeNode* u;
-    BTreeNode* w;
-    BTreeNode* y;
-    BTreeNode* z;
+bool BTree::doRemove(BTreeNode *pt, string x)
+{
+    BTreeNode *u;
+    BTreeNode *w;
+    BTreeNode *y;
+    BTreeNode *z;
 
     int i = 0;
-    while (i < pt->n && x > pt->key[i]->palavra) i++;
+    while (i < pt->n && x > pt->key[i]->palavra)
+        i++;
 
-    if (i < pt->n && x == pt->key[i]->palavra) {
-        if (pt->leaf) {
+    if (i < pt->n && x == pt->key[i]->palavra)
+    {
+        if (pt->leaf)
+        {
             // Caso 1
-            for (int j = i; j < pt->n - 1; j++) pt->key[j] = pt->key[j + 1];
+            for (int j = i; j < pt->n - 1; j++)
+                pt->key[j] = pt->key[j + 1];
 
             pt->n--;
 
             DISK_WRITE(pt);
 
             return true;
-        } else {
+        }
+        else
+        {
             // Caso 2
             DISK_READ(pt->c[i]);
 
-            if (pt->c[i]->n > t - 1) {
+            if (pt->c[i]->n > t - 1)
+            {
                 // Caso 2a
                 u = pt->c[i];
 
-                while (!u->leaf) {
+                while (!u->leaf)
+                {
                     DISK_READ(u->c[u->n]);
                     u = u->c[u->n];
                 }
@@ -199,14 +238,18 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
                 DISK_WRITE(pt);
 
                 return doRemove(pt->c[i], u->key[u->n - 1]->palavra);
-            } else {
+            }
+            else
+            {
                 DISK_READ(pt->c[i + 1]);
 
-                if (pt->c[i + 1]->n > t - 1) {
+                if (pt->c[i + 1]->n > t - 1)
+                {
                     // Caso 2b
                     z = pt->c[i + 1];
 
-                    while (!z->leaf) {
+                    while (!z->leaf)
+                    {
                         DISK_READ(z->c[0]);
                         z = z->c[0];
                     }
@@ -216,7 +259,9 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
                     DISK_WRITE(pt);
 
                     return doRemove(pt->c[i + 1], z->key[0]->palavra);
-                } else {
+                }
+                else
+                {
                     // Caso 2c
                     merge(pt, i);
 
@@ -224,34 +269,42 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
                 }
             }
         }
-    } else {
-        if (pt->leaf) return false;
+    }
+    else
+    {
+        if (pt->leaf)
+            return false;
 
         DISK_READ(pt->c[i]);
 
         if (pt->c[i]->n > t - 1)
             return doRemove(pt->c[i], x);
-        else {
+        else
+        {
             // Caso 3
             y = pt->c[i];
 
-            if (i > 0) {
+            if (i > 0)
+            {
                 DISK_READ(pt->c[i - 1]);
 
                 u = pt->c[i - 1];
             }
 
-            if (i < pt->n) {
+            if (i < pt->n)
+            {
                 DISK_READ(pt->c[i + 1]);
 
                 z = pt->c[i + 1];
             }
 
-            if (i > 0 && pt->c[i - 1]->n > t - 1) {
+            if (i > 0 && pt->c[i - 1]->n > t - 1)
+            {
                 // Caso 3a - esquerda
                 y->c[t] = y->c[t - 1];
 
-                for (int j = t - 2; j >= 0; j--) {
+                for (int j = t - 2; j >= 0; j--)
+                {
                     y->key[j + 1] = y->key[j];
                     y->c[j + 1] = y->c[j];
                 }
@@ -268,8 +321,11 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
                 DISK_WRITE(y);
 
                 return doRemove(pt->c[i], x);
-            } else {
-                if (i < pt->n && pt->c[i + 1]->n > t - 1) {
+            }
+            else
+            {
+                if (i < pt->n && pt->c[i + 1]->n > t - 1)
+                {
                     // Caso 3a - direita
                     y->n++;
                     y->key[t - 1] = pt->key[i];
@@ -277,7 +333,8 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
 
                     pt->key[i] = z->key[0];
 
-                    for (int j = 0; j < z->n - 1; j++) {
+                    for (int j = 0; j < z->n - 1; j++)
+                    {
                         z->key[j] = z->key[j + 1];
                         z->c[j] = z->c[j + 1];
                     }
@@ -290,19 +347,25 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
                     DISK_WRITE(y);
 
                     return doRemove(pt->c[i], x);
-                } else {
+                }
+                else
+                {
                     // Caso 3b
-                    if (i < pt->n) {
+                    if (i < pt->n)
+                    {
                         merge(pt, i);
 
                         w = pt->c[i];
-                    } else {
+                    }
+                    else
+                    {
                         merge(pt, i - 1);
 
                         w = pt->c[i - 1];
                     }
 
-                    if (pt->n == 0) {
+                    if (pt->n == 0)
+                    {
                         root = w;
 
                         delete pt;
@@ -315,16 +378,18 @@ bool BTree::doRemove(BTreeNode* pt, string x) {
     }
 }
 
-void BTree::merge(BTreeNode* pt, int i) {
-    BTreeNode* y;
-    BTreeNode* z;
+void BTree::merge(BTreeNode *pt, int i)
+{
+    BTreeNode *y;
+    BTreeNode *z;
 
     y = pt->c[i];
     z = pt->c[i + 1];
 
     y->key[t - 1] = pt->key[i];
 
-    for (int j = t; j < 2 * t - 1; j++) {
+    for (int j = t; j < 2 * t - 1; j++)
+    {
         y->c[j] = z->c[j - t];
         y->key[j] = z->key[j - t];
     }
@@ -332,9 +397,11 @@ void BTree::merge(BTreeNode* pt, int i) {
     y->c[2 * t - 1] = z->c[t - 1];
     y->n = 2 * t - 1;
 
-    for (int j = i; j < pt->n - 1; j++) pt->key[j] = pt->key[j + 1];
+    for (int j = i; j < pt->n - 1; j++)
+        pt->key[j] = pt->key[j + 1];
 
-    for (int j = i + 1; j < pt->n; j++) pt->c[j] = pt->c[j + 1];
+    for (int j = i + 1; j < pt->n; j++)
+        pt->c[j] = pt->c[j + 1];
 
     pt->n--;
 
@@ -347,11 +414,15 @@ void BTree::merge(BTreeNode* pt, int i) {
 
 void BTree::print() { print(root, 0); }
 
-void BTree::print(BTreeNode* node, int spaces) {
-    if (node != 0) {
-        for (int i = 0; i < spaces; i++) cout << " ";
+void BTree::print(BTreeNode *node, int spaces)
+{
+    if (node != 0)
+    {
+        for (int i = 0; i < spaces; i++)
+            cout << " ";
 
-        for (int i = 0; i < node->n; i++) {
+        for (int i = 0; i < node->n; i++)
+        {
             cout << node->key[i]->palavra << " ";
         }
 
@@ -362,97 +433,122 @@ void BTree::print(BTreeNode* node, int spaces) {
             cout << "(" << node->leaf << ") (" << node->n << ") (nulo)";
         cout << endl;
 
-        for (int i = 0; i < node->n + 1; i++) print(node->c[i], spaces + 5);
+        for (int i = 0; i < node->n + 1; i++)
+            print(node->c[i], spaces + 5);
     }
 }
 
-void BTree::printRepeticoes() { printRepeticoes(root, 0); }
+void BTree::printRepeticoes(string nomeArquivo)
+{
+    printRepeticoes(root, nomeArquivo);
+}
 
-void BTree::printRepeticoes(BTreeNode* node, int spaces) {
-    if (node != 0) {
-        for (int i = 0; i < spaces; i++) cout << " ";
+void BTree::printRepeticoes(BTreeNode *node, string nomeArquivoSaida)
+{
+    ofstream arquivoSaida;
+    nomeArquivoSaida.append(".out");
+    arquivoSaida.open(nomeArquivoSaida, ios::app);
 
-        for (int i = 0; i < node->n; i++) {
-            cout << node->key[i]->palavra << " " << endl;
+    Queue fila = Queue();
 
-            for (const auto& x : node->key[i]->repeticoes) {
-                cout << "Indice do documento: "
-                     << "\n"
-                     << x.first << "\n"
-                     << "Quantidade de repeticoes: "
-                     << "\n"
-                     << x.second << "\n"
-                     << "\n";
+    if (node != 0)
+    {
+        fila.enqueue(node);
+
+        while (!fila.isEmpty())
+        {
+            node = fila.dequeue();
+            for (int i = 0; i < node->n + 1; i++) {
+                if(node->c[i] != 0){
+                    fila.enqueue(node->c[i]);
+                }
             }
-            cout << endl;
+
+            for (int i = 0; i < node->n; i++)
+            {
+                arquivoSaida << node->key[i]->palavra << " ";
+
+                for (const auto &x : node->key[i]->repeticoes)
+                {
+                    arquivoSaida << x.second << " " << x.first << " ";
+                }
+                arquivoSaida << endl;
+                
+            }
         }
-
-        // if (node->parent)
-        //     cout << "(" << node->leaf << ") (" << node->n << ") ("
-        //          << node->parent->key[0]->palavra << ")";
-        // else
-        //     cout << "(" << node->leaf << ") (" << node->n << ") (nulo)";
-        // cout << endl;
-
-        for (int i = 0; i < node->n + 1; i++)
-            printRepeticoes(node->c[i], spaces + 5);
     }
+    arquivoSaida.close();
 }
 
 // Retorna a profundidade de um nó
-int BTree::depth(BTreeNode* node) {
-    if (node == root) return 0;
+int BTree::depth(BTreeNode *node)
+{
+    if (node == root)
+        return 0;
 
     return 1 + depth(node->parent);
 }
 
 // Imprime os nós e as chaves da árvore por nível
-void BTree::levelTraversal() {
-    Queue* q = new Queue();
+void BTree::levelTraversal()
+{
+    Queue *q = new Queue();
 
     q->enqueue(root);
 
-    BTreeNode* prev = root;
+    BTreeNode *prev = root;
 
     // Enquanto houver alguém na pilha
-    while (!q->isEmpty()) {
-        BTreeNode* ptr = q->dequeue();
+    while (!q->isEmpty())
+    {
+        BTreeNode *ptr = q->dequeue();
 
-        if (depth(prev) != depth(ptr)) cout << endl;
-
-        cout << "|";
-
-        for (int i = 0; i < ptr->n; i++) cout << ptr->key[i] << " ";
+        if (depth(prev) != depth(ptr))
+            cout << endl;
 
         cout << "|";
 
-        if (!ptr->leaf) {
-            for (int i = 0; i <= ptr->n; i++) q->enqueue(ptr->c[i]);
+        for (int i = 0; i < ptr->n; i++)
+            cout << ptr->key[i] << " ";
+
+        cout << "|";
+
+        if (!ptr->leaf)
+        {
+            for (int i = 0; i <= ptr->n; i++)
+                q->enqueue(ptr->c[i]);
         }
         prev = ptr;
     }
 }
-void BTree::update(string palavra, int docId) {
+void BTree::update(string palavra, int docId)
+{
     int i;
 
-    BTreeNode* pointer = doSearch(root, palavra, i);
-    if (pointer != 0) {
+    BTreeNode *pointer = doSearch(root, palavra, i);
+    if (pointer != 0)
+    {
         // já existia palavra na árvoere, apenas as repetições vao mudar
         map<int, int> mapRepeticoes = pointer->key[i]->repeticoes;
 
         auto it = mapRepeticoes.find(docId);
-        if (it != mapRepeticoes.end()) {
+        if (it != mapRepeticoes.end())
+        {
             // a chave já existe no mapa, apenas incrementar no contador
             // cout << it->second << endl;
             mapRepeticoes[docId] = it->second + 1;
-        } else {
+        }
+        else
+        {
             mapRepeticoes.insert(pair<int, int>(docId, 1));
         }
         pointer->key[i]->repeticoes = mapRepeticoes;
-    } else {
+    }
+    else
+    {
         map<int, int> mapRepeticoes;
         mapRepeticoes[docId] = 1;
-        Palavra* novo = new Palavra(palavra, mapRepeticoes);
+        Palavra *novo = new Palavra(palavra, mapRepeticoes);
 
         doInsert(novo);
     }
